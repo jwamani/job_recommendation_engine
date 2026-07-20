@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block title %}Home — JobMatch{% endblock %}{% block
+content %}
+<div class="text-center py-5">
+  <h1>Find the job that matches you</h1>
+  <p class="lead">
+    Personalized recommendations based on your profile and activity.
+  </p>
+  <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg"
+    >Browse Jobs</a
+  >
+</div>
+{% endblock %}

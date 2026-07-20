@@ -1,0 +1,4 @@
+/* Project-wide overrides on top of Bootstrap defaults */
+body {
+  background-color: #f8f9fa;
+}
