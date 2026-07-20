@@ -25,5 +25,5 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     # path("jobs/", include("jobs.urls")),
     # path("interactions/", include("interactions.urls")),
-    # path("matching/", include("matching.urls")),
+    path("matching/", include("matching.urls")),
 ]
