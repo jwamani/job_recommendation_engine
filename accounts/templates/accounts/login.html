@@ -13,17 +13,23 @@
 
     <form method="post">
       {% csrf_token %}
+      {% if request.GET.next %}
       <input type="hidden" name="next" value="{{ request.GET.next }}">
+      {% endif %}
+
       <div class="mb-3">
         <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
         {{ form.username }}
       </div>
+
       <div class="mb-3">
         <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
         {{ form.password }}
       </div>
+
       <button type="submit" class="btn btn-primary w-100">Log In</button>
     </form>
+
     <p class="mt-3 text-center">
       Don't have an account? <a href="{% url 'accounts:register' %}">Register</a>
     </p>
