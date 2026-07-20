@@ -7,20 +7,24 @@
     <form method="post">
       {% csrf_token %}
       <div class="mb-3">
-        <label class="form-label" for="id_username">Username</label>
-        <input type="text" class="form-control" id="id_username" name="username" required>
+        <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        {% for error in form.username.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
       </div>
       <div class="mb-3">
-        <label class="form-label" for="id_email">Email</label>
-        <input type="email" class="form-control" id="id_email" name="email" required>
+        <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+        {{ form.email }}
+        {% for error in form.email.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
       </div>
       <div class="mb-3">
-        <label class="form-label" for="id_password1">Password</label>
-        <input type="password" class="form-control" id="id_password1" name="password1" required>
+        <label class="form-label" for="{{ form.password1.id_for_label }}">Password</label>
+        {{ form.password1 }}
+        {% for error in form.password1.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
       </div>
       <div class="mb-3">
-        <label class="form-label" for="id_password2">Confirm Password</label>
-        <input type="password" class="form-control" id="id_password2" name="password2" required>
+        <label class="form-label" for="{{ form.password2.id_for_label }}">Confirm Password</label>
+        {{ form.password2 }}
+        {% for error in form.password2.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
       </div>
       <button type="submit" class="btn btn-primary w-100">Register</button>
     </form>
