@@ -37,11 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    'django_filters',
     # our apps
-    'accounts',
-    'jobs',
-    'interactions',
-    'matching',
+    'accounts.apps.AccountsConfig',
+    'jobs.apps.JobsConfig',
+    'interactions.apps.InteractionsConfig',
+    'matching.apps.MatchingConfig',
 ]
 
 MIDDLEWARE = [
