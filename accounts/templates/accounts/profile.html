@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}My Profile - JobMatch{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-7">
+    <h2 class="mb-4">My Profile</h2>
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+        <p class="card-text text-muted">{{ user.email }}</p>
+        <p class="card-text">
+          {% for skill in profile.skills.all %}
+          <span class="badge bg-primary me-1">{{ skill.name }}</span>
+          {% endfor %}
+        </p>
+      </div>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label class="form-label" for="id_experience_level">Experience Level</label>
+        <select class="form-select" id="id_experience_level" name="experience_level">
+          <option value="entry" {% if profile.experience_level == "entry" %}selected{% endif %}>Entry Level</option>
+          <option value="mid" {% if profile.experience_level == "mid" %}selected{% endif %}>Mid Level</option>
+          <option value="senior" {% if profile.experience_level == "senior" %}selected{% endif %}>Senior Level</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_preferred_location">Preferred Location</label>
+        <input type="text" class="form-control" id="id_preferred_location" name="preferred_location"
+               value="{{ profile.preferred_location }}">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_preferred_job_type">Preferred Job Type</label>
+        <select class="form-select" id="id_preferred_job_type" name="preferred_job_type">
+          <option value="full-time" {% if profile.preferred_job_type == "full-time" %}selected{% endif %}>Full-time</option>
+          <option value="part-time" {% if profile.preferred_job_type == "part-time" %}selected{% endif %}>Part-time</option>
+          <option value="contract" {% if profile.preferred_job_type == "contract" %}selected{% endif %}>Contract</option>
+          <option value="remote" {% if profile.preferred_job_type == "remote" %}selected{% endif %}>Remote</option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="id_skills">Skills</label>
+        <input type="text" class="form-control" id="id_skills" name="skills"
+               value="{{ skills_csv }}">
+        <div class="form-text">Comma-separated for now, e.g. "Python, SQL, Django".</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
