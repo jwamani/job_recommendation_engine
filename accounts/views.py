@@ -1,9 +1,9 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.http import HttpRequest
 
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, ProfileForm, RegisterForm
 from .models import Profile, Skill
 
 
@@ -39,17 +39,35 @@ def register_view(request: HttpRequest):
 @login_required
 def profile_view(request: HttpRequest):
     profile, _ = Profile.objects.get_or_create(user=request.user)
+    return render(request, 'accounts/profile.html', {'profile': profile})
+
+
+@login_required
+def profile_edit_view(request: HttpRequest):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        profile.experience_level = request.POST.get('experience_level', '')
-        profile.preferred_location = request.POST.get('preferred_location', '')
-        profile.preferred_job_type = request.POST.get('preferred_job_type', '')
-        profile.save()
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            profile = form.save(commit=False)
+            profile.save()
 
-        skill_names = [name.strip() for name in request.POST.get('skills', '').split(',') if name.strip()]
-        skills = [Skill.objects.get_or_create(name=name)[0] for name in skill_names]
-        profile.skills.set(skills)
-        return redirect('accounts:profile')
+            skill_names = [
+                name.strip()
+                for name in form.cleaned_data.get('skills', '').split(',')
+                if name.strip()
+            ]
+            skills = [Skill.objects.get_or_create(name=name)[0] for name in skill_names]
+            profile.skills.set(skills)
 
-    skills_csv = ', '.join(profile.skills.values_list('name', flat=True))
-    return render(request, 'accounts/profile.html', {'profile': profile, 'skills_csv': skills_csv})
+            return redirect('accounts:profile')
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'accounts/profile_edit.html', {'profile': profile, 'form': form})
+
+
+@login_required
+def logout_view(request: HttpRequest):
+    logout(request)
+    return redirect('jobs:job_list')
