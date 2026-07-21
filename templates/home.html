@@ -1,14 +1,62 @@
 {% extends "base.html" %}
-{% block title %}Home — JobMatch{% endblock %}
+{% block title %}JobMatch - Find the Job That Matches You{% endblock %}
 {% block content %}
-<div class="text-center py-5">
-  <h1>Find the job that matches you</h1>
-  <p class="lead">
-    Personalized recommendations based on your profile and activity.
+
+<div class="text-center py-5 mb-5">
+  <h1 class="display-4 fw-bold mb-3">Find the Job That Matches You</h1>
+  <p class="lead text-muted mb-4 mx-auto" style="max-width: 560px;">
+    Personalized job recommendations based on your skills, preferences, and activity.
+    Save and apply to jobs — the more you use it, the better it gets.
   </p>
-  {% url 'jobs:job_list' as jobs_url %}
-  {% if jobs_url %}
-  <a href="{{ jobs_url }}" class="btn btn-primary btn-lg">Browse Jobs</a>
-  {% endif %}
+  <div class="d-flex justify-content-center gap-3">
+    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg px-4">Browse Jobs</a>
+    {% if not user.is_authenticated %}
+    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg px-4">Create Profile</a>
+    {% else %}
+    <a href="{% url 'matching:recommendations' %}" class="btn btn-outline-primary btn-lg px-4">My Recommendations</a>
+    {% endif %}
+  </div>
 </div>
+
+<div class="row g-4 mb-5">
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <div class="mb-3 fs-1">&#128269;</div>
+        <h5 class="card-title">Search &amp; Filter</h5>
+        <p class="card-text text-muted">
+          Browse jobs by keyword, filter by category, location, salary, and job type.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <div class="mb-3 fs-1">&#127919;</div>
+        <h5 class="card-title">Smart Matching</h5>
+        <p class="card-text text-muted">
+          Get ranked recommendations based on your skills, experience, and preferences.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100 border-0 shadow-sm text-center p-4">
+      <div class="card-body">
+        <div class="mb-3 fs-1">&#128200;</div>
+        <h5 class="card-title">Learns Over Time</h5>
+        <p class="card-text text-muted">
+          Save and apply to jobs. Your interactions refine future recommendations automatically.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="text-center mb-5">
+  <h3 class="mb-3">Ready to get started?</h3>
+  <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg px-4">Browse Open Positions</a>
+</div>
+
 {% endblock %}
