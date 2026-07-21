@@ -9,7 +9,7 @@ from .models import JobPosting
 class JobListView(FilterView):
 	model = JobPosting
 	filterset_class = JobPostingFilter
-	template_name = "job_list.html"
+	template_name = "jobs/job_list.html"
 	paginate_by = 6
 
 	def get_queryset(self):
