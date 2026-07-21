@@ -1,12 +1,13 @@
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
+from django.http import HttpRequest
 
 from .forms import LoginForm, RegisterForm
 from .models import Profile, Skill
 
 
-def login_view(request):
+def login_view(request: HttpRequest):
     if request.user.is_authenticated:
         return redirect('accounts:profile')
 
@@ -22,7 +23,7 @@ def login_view(request):
     return render(request, 'accounts/login.html', {'form': form})
 
 
-def register_view(request):
+def register_view(request: HttpRequest):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -36,7 +37,7 @@ def register_view(request):
 
 
 @login_required
-def profile_view(request):
+def profile_view(request: HttpRequest):
     profile, _ = Profile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
