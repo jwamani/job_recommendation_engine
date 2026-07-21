@@ -1,62 +1,134 @@
-{% extends "base.html" %}
-{% block title %}JobMatch - Find the Job That Matches You{% endblock %}
-{% block content %}
+{% extends "base.html" %} {% block title %}JobMatch - Find the Job That Matches
+You{% endblock %} {% block main %}
 
-<div class="text-center py-5 mb-5">
-  <h1 class="display-4 fw-bold mb-3">Find the Job That Matches You</h1>
-  <p class="lead text-muted mb-4 mx-auto" style="max-width: 560px;">
-    Personalized job recommendations based on your skills, preferences, and activity.
-    Save and apply to jobs — the more you use it, the better it gets.
-  </p>
-  <div class="d-flex justify-content-center gap-3">
-    <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg px-4">Browse Jobs</a>
-    {% if not user.is_authenticated %}
-    <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-lg px-4">Create Profile</a>
-    {% else %}
-    <a href="{% url 'matching:recommendations' %}" class="btn btn-outline-primary btn-lg px-4">My Recommendations</a>
-    {% endif %}
-  </div>
-</div>
+<!-- Hero Section -->
+<section class="hero-section d-flex align-items-center">
+	<div class="hero-overlay"></div>
+	<div class="container position-relative">
+		<div class="row justify-content-center">
+			<div class="col-lg-8 text-center text-white">
+				<h1 class="display-3 fw-bold mb-3">
+					Find the Job That Matches You
+				</h1>
+				<p class="lead mb-4 opacity-90">
+					Personalized recommendations based on your skills,
+					experience, and preferences. The more you engage, the
+					smarter it gets.
+				</p>
+				<div class="d-flex justify-content-center gap-3 flex-wrap">
+					<a
+						href="{% url 'jobs:job_list' %}"
+						class="btn btn-primary btn-lg px-4"
+						>Browse Jobs</a
+					>
+					{% if not user.is_authenticated %}
+					<a
+						href="{% url 'accounts:register' %}"
+						class="btn btn-outline-light btn-lg px-4"
+						>Create Profile</a
+					>
+					{% else %}
+					<a
+						href="{% url 'matching:recommendations' %}"
+						class="btn btn-outline-light btn-lg px-4"
+						>My Recommendations</a
+					>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
 
-<div class="row g-4 mb-5">
-  <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm text-center p-4">
-      <div class="card-body">
-        <div class="mb-3 fs-1">&#128269;</div>
-        <h5 class="card-title">Search &amp; Filter</h5>
-        <p class="card-text text-muted">
-          Browse jobs by keyword, filter by category, location, salary, and job type.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm text-center p-4">
-      <div class="card-body">
-        <div class="mb-3 fs-1">&#127919;</div>
-        <h5 class="card-title">Smart Matching</h5>
-        <p class="card-text text-muted">
-          Get ranked recommendations based on your skills, experience, and preferences.
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="card h-100 border-0 shadow-sm text-center p-4">
-      <div class="card-body">
-        <div class="mb-3 fs-1">&#128200;</div>
-        <h5 class="card-title">Learns Over Time</h5>
-        <p class="card-text text-muted">
-          Save and apply to jobs. Your interactions refine future recommendations automatically.
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- Stats Bar -->
+<section class="stats-bar py-4 border-bottom">
+	<div class="container">
+		<div class="row text-center g-4">
+			<div class="col-md-4">
+				<div class="stats-number">500+</div>
+				<div class="stats-label">Active Job Postings</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stats-number">120+</div>
+				<div class="stats-label">Companies Hiring</div>
+			</div>
+			<div class="col-md-4">
+				<div class="stats-number">Smart</div>
+				<div class="stats-label">AI-Powered Matching</div>
+			</div>
+		</div>
+	</div>
+</section>
 
-<div class="text-center mb-5">
-  <h3 class="mb-3">Ready to get started?</h3>
-  <a href="{% url 'jobs:job_list' %}" class="btn btn-primary btn-lg px-4">Browse Open Positions</a>
-</div>
+<!-- Features Section -->
+<section class="features-section py-5">
+	<div class="container">
+		<div class="text-center mb-5">
+			<h2 class="fw-bold">How It Works</h2>
+			<p class="text-muted">
+				Three simple steps to your next opportunity
+			</p>
+		</div>
+		<div class="row g-4">
+			<div class="col-md-4">
+				<div class="feature-card h-100 text-center p-4">
+					<div class="feature-icon">
+						<i class="bi bi-search"></i>
+					</div>
+					<h5 class="fw-bold mt-3">Search &amp; Filter</h5>
+					<p class="text-muted mb-0">
+						Browse thousands of jobs by keyword, category, location,
+						salary, and job type.
+					</p>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="feature-card h-100 text-center p-4">
+					<div class="feature-icon">
+						<i class="bi bi-bullseye"></i>
+					</div>
+					<h5 class="fw-bold mt-3">Smart Matching</h5>
+					<p class="text-muted mb-0">
+						Get ranked recommendations based on your skills,
+						experience, and stated preferences.
+					</p>
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="feature-card h-100 text-center p-4">
+					<div class="feature-icon">
+						<i class="bi bi-graph-up-arrow"></i>
+					</div>
+					<h5 class="fw-bold mt-3">Learns Over Time</h5>
+					<p class="text-muted mb-0">
+						Save and apply to jobs. Your interactions refine future
+						recommendations automatically.
+					</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section d-flex align-items-center">
+	<div class="cta-overlay"></div>
+	<div class="container position-relative">
+		<div class="row justify-content-center">
+			<div class="col-lg-8 text-center text-white">
+				<h2 class="fw-bold mb-3">Ready to find your next role?</h2>
+				<p class="lead mb-4 opacity-90">
+					Join today and let the system do the heavy lifting. Your
+					ideal job is closer than you think.
+				</p>
+				<a
+					href="{% url 'jobs:job_list' %}"
+					class="btn btn-light btn-lg px-5 fw-semibold"
+					>Browse Open Positions</a
+				>
+			</div>
+		</div>
+	</div>
+</section>
 
 {% endblock %}
