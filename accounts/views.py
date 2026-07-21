@@ -70,4 +70,4 @@ def profile_edit_view(request: HttpRequest):
 @login_required
 def logout_view(request: HttpRequest):
     logout(request)
-    return redirect('jobs:job_list')
+    return redirect('home')
