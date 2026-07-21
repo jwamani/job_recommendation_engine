@@ -12,7 +12,7 @@
           <span class="badge text-bg-secondary">{{ object.get_experience_level_display }}</span>
           <span class="badge text-bg-secondary">{{ object.get_job_type_display }}</span>
           {% if object.salary_min %}
-          <span class="badge text-bg-success">${{ object.salary_min|floatformat:0 }}{% if object.salary_max %} - ${{ object.salary_max|floatformat:0 }}{% endif %}</span>
+          <span class="badge text-bg-success">UGX {{ object.salary_min|floatformat:0 }}{% if object.salary_max %} - UGX {{ object.salary_max|floatformat:0 }}{% endif %}</span>
           {% endif %}
         </div>
         <h2 class="h5">Description</h2>
@@ -46,6 +46,28 @@
         </dl>
       </div>
     </div>
+
+    {% if user.is_authenticated %}
+    <div class="d-flex gap-2 mb-3">
+      <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
+        {% csrf_token %}
+        <input type="hidden" name="job_id" value="{{ object.pk }}">
+        <input type="hidden" name="action" value="save">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="btn btn-outline-primary w-100">Save</button>
+      </form>
+      <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
+        {% csrf_token %}
+        <input type="hidden" name="job_id" value="{{ object.pk }}">
+        <input type="hidden" name="action" value="apply">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="btn btn-primary w-100">Apply</button>
+      </form>
+    </div>
+    {% else %}
+    <a class="btn btn-outline-secondary w-100 mb-3" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in to save or apply</a>
+    {% endif %}
+
     <a class="btn btn-outline-secondary w-100" href="{% url 'jobs:job_list' %}">Back to jobs</a>
   </div>
 </div>
