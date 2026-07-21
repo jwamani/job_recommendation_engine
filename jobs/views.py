@@ -9,7 +9,7 @@ from .models import JobPosting
 class JobListView(FilterView):
 	model = JobPosting
 	filterset_class = JobPostingFilter
-	template_name = "jobs/job_list.html"
+	template_name = "job_list.html"
 	paginate_by = 6
 
 	def get_queryset(self):
@@ -39,7 +39,7 @@ class JobListView(FilterView):
 
 class JobDetailView(DetailView):
 	model = JobPosting
-	template_name = "jobs/job_detail.html"
+	template_name = "job_detail.html"
 
 	def get_queryset(self):
 		return JobPosting.objects.select_related("category").prefetch_related("required_skills")
