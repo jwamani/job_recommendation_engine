@@ -1,24 +1,40 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    {% url 'jobs:job_list' as jobs_url %}
-    {% url 'accounts:login' as login_url %}
-    <a class="navbar-brand" href="{{ jobs_url }}">JobMatch</a>
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="{{ jobs_url }}">Browse Jobs</a></li>
+    <a class="navbar-brand fw-bold" href="{% url 'jobs:job_list' %}">JobMatch</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-        {% url 'matching:recommendations' as recommendations_url %}
-        {% if recommendations_url %}
-        <li class="nav-item"><a class="nav-link" href="{{ recommendations_url }}">Recommended For You</a></li>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'jobs:job_list' %}">Browse Jobs</a>
+        </li>
+
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'matching:recommendations' %}">Recommended For You</a>
+        </li>
         {% endif %}
+      </ul>
 
-        {% url 'interactions:applications' as applications_url %}
-        {% if applications_url %}
-        <li class="nav-item"><a class="nav-link" href="{{ applications_url }}">My Applications</a></li>
-        {% endif %}
-
-        {% if login_url %}
-        <li class="nav-item"><a class="nav-link" href="{{ login_url }}">Log In</a></li>
+      <ul class="navbar-nav">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:profile' %}">
+            {{ user.get_full_name|default:user.username }}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:logout' %}">Log Out</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:login' %}">Log In</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:register' %}">Register</a>
+        </li>
         {% endif %}
       </ul>
     </div>
