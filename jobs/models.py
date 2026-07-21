@@ -4,6 +4,10 @@ from accounts.models import Skill
 class Category(models.Model):
     """Job category (e.g. Engineering, Design, Marketing)."""
     name = models.CharField(max_length=100, unique=True)
+    
+    class Meta:
+        verbose_name_plural = "categories"
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
