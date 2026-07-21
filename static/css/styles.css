@@ -139,3 +139,80 @@ body {
 	font-weight: 600;
 	flex-shrink: 0;
 }
+
+/* Recommendations page */
+.recs-hero {
+	position: relative;
+	padding: 4rem 0;
+	background-color: #051f46;
+	background-image: linear-gradient(135deg, #0d2f66 0%, #051f46 100%);
+}
+
+.recs-card {
+	background-color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	border-radius: 12px;
+	transition:
+		transform 0.2s ease,
+		box-shadow 0.2s ease;
+}
+
+.recs-card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.recs-company-icon {
+	width: 44px;
+	height: 44px;
+	background-color: #e7f1ff;
+	color: #0d6efd;
+	border-radius: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+	flex-shrink: 0;
+}
+
+.recs-match {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.35rem 0.7rem;
+	border-radius: 999px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.recs-match-high {
+	background-color: #e6f7ed;
+	color: #1a7f4a;
+}
+
+.recs-match-mid {
+	background-color: #fff4e0;
+	color: #b3720b;
+}
+
+.recs-match-low {
+	background-color: #f1f2f4;
+	color: #6c757d;
+}
+
+.recs-empty {
+	background-color: #f8f9fa;
+	border-radius: 12px;
+}
+
+.recs-empty-icon {
+	width: 64px;
+	height: 64px;
+	background-color: #e7f1ff;
+	color: #0d6efd;
+	border-radius: 50%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.75rem;
+}

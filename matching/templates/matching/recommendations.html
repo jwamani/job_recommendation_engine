@@ -1,39 +1,85 @@
 {% extends "base.html" %}
 {% block title %}Recommended For You - JobMatch{% endblock %}
-{% block content %}
-<h2 class="mb-4">Recommended For You</h2>
-<p class="text-muted">Jobs ranked by how well they match your profile.</p>
-
-<div class="row">
-  {% for rec in recommendations %}
-  <div class="col-md-6 mb-3">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="d-flex justify-content-between align-items-start">
-          <h5 class="card-title">{{ rec.job.title }}</h5>
-          {% if rec.score >= 80 %}
-          <span class="badge bg-success">{{ rec.score }}% match</span>
-          {% elif rec.score >= 50 %}
-          <span class="badge bg-warning text-dark">{{ rec.score }}% match</span>
-          {% else %}
-          <span class="badge bg-secondary">{{ rec.score }}% match</span>
-          {% endif %}
-        </div>
-        <h6 class="card-subtitle mb-2 text-muted">{{ rec.job.company }} — {{ rec.job.location }}</h6>
-        <p class="card-text">
-          <span class="badge bg-light text-dark border">{{ rec.job.job_type }}</span>
+{% block main %}
+<section class="recs-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center text-white">
+        <h1 class="fw-bold mb-2">Recommended For You</h1>
+        <p class="lead mb-0 opacity-90">
+          Jobs ranked by how well they match your skills, experience, and preferences.
         </p>
-        {% url 'jobs:job_detail' rec.job.id as job_url %}
-        {% if job_url %}
-        <a href="{{ job_url }}" class="btn btn-outline-primary btn-sm">View Details</a>
-        {% else %}
-        <a href="#" class="btn btn-outline-primary btn-sm disabled">View Details</a>
-        {% endif %}
       </div>
     </div>
   </div>
-  {% empty %}
-  <p>No recommendations yet — complete your profile to get matched jobs.</p>
-  {% endfor %}
-</div>
+</section>
+
+<main class="container py-5">
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} mb-2" role="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if recommendations %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <span class="text-muted">{{ recommendations|length }} match{{ recommendations|length|pluralize }} found</span>
+  </div>
+  {% endif %}
+
+  <div class="row g-4">
+    {% for rec in recommendations %}
+    <div class="col-md-6">
+      <div class="recs-card h-100 p-4">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div class="d-flex align-items-start gap-3">
+            <div class="recs-company-icon">
+              <i class="bi bi-building"></i>
+            </div>
+            <div>
+              <h5 class="fw-bold mb-1">{{ rec.job.title }}</h5>
+              <div class="text-muted small">
+                <i class="bi bi-briefcase me-1"></i>{{ rec.job.company }}
+                <span class="mx-1">&middot;</span>
+                <i class="bi bi-geo-alt me-1"></i>{{ rec.job.location }}
+              </div>
+            </div>
+          </div>
+          {% if rec.score >= 80 %}
+          <span class="recs-match recs-match-high"><i class="bi bi-check-circle-fill me-1"></i>{{ rec.score }}%</span>
+          {% elif rec.score >= 50 %}
+          <span class="recs-match recs-match-mid"><i class="bi bi-dash-circle-fill me-1"></i>{{ rec.score }}%</span>
+          {% else %}
+          <span class="recs-match recs-match-low"><i class="bi bi-circle-fill me-1"></i>{{ rec.score }}%</span>
+          {% endif %}
+        </div>
+
+        <div class="mb-3">
+          <span class="badge bg-light text-dark border">{{ rec.job.job_type }}</span>
+        </div>
+
+        {% url 'jobs:job_detail' rec.job.id as job_url %}
+        {% if job_url %}
+        <a href="{{ job_url }}" class="btn btn-primary btn-sm px-3">View Details</a>
+        {% else %}
+        <a href="#" class="btn btn-outline-secondary btn-sm px-3 disabled">View Details</a>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="recs-empty text-center py-5">
+        <div class="recs-empty-icon mb-3">
+          <i class="bi bi-search"></i>
+        </div>
+        <h5 class="fw-bold mb-2">No recommendations yet</h5>
+        <p class="text-muted mb-4">Complete your profile to get jobs matched to your skills and preferences.</p>
+        <a href="{% url 'accounts:profile_edit' %}" class="btn btn-primary px-4">Complete Your Profile</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
 {% endblock %}
