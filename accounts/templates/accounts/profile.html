@@ -1,90 +1,103 @@
 {% extends "base.html" %}
 {% block title %}My Profile - JobMatch{% endblock %}
-{% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-8">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0">My Profile</h2>
-      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-primary">
-        <i class="bi bi-pencil-square"></i> Edit Profile
+{% block main %}
+<section class="profile-hero">
+  <div class="container">
+    <div class="d-flex align-items-center gap-4 flex-wrap">
+      <div class="profile-hero-avatar">
+        {{ user.get_full_name|default:user.username|make_list|first|upper }}
+      </div>
+      <div class="me-auto">
+        <h2 class="fw-bold text-white mb-1">{{ user.get_full_name|default:user.username }}</h2>
+        <p class="text-white-50 mb-0"><i class="bi bi-envelope me-2"></i>{{ user.email }}</p>
+      </div>
+      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-light fw-semibold px-4">
+        <i class="bi bi-pencil-square me-1"></i> Edit Profile
       </a>
     </div>
+  </div>
+</section>
 
-    <div class="card profile-card shadow-sm mb-4">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center mb-4">
-          <div class="profile-avatar me-3">
-            {{ user.get_full_name|default:user.username|make_list|first|upper }}
-          </div>
-          <div>
-            <h4 class="mb-0">{{ user.get_full_name|default:user.username }}</h4>
-            <span class="text-muted">{{ user.email }}</span>
-          </div>
-        </div>
+<main class="container py-5">
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} mb-2" role="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
-        <hr>
-
-        <div class="row g-3 mb-3">
-          <div class="col-sm-6">
-            <small class="text-muted d-block mb-1">Experience Level</small>
-            <span class="fw-semibold">
-              {% if profile.experience_level == "entry" %}Entry Level
-              {% elif profile.experience_level == "mid" %}Mid Level
-              {% elif profile.experience_level == "senior" %}Senior Level
-              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
-            </span>
-          </div>
-          <div class="col-sm-6">
-            <small class="text-muted d-block mb-1">Preferred Job Type</small>
-            <span class="fw-semibold">
-              {% if profile.preferred_job_type %}
-                {{ profile.get_preferred_job_type_display }}
-              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
-            </span>
-          </div>
-          <div class="col-sm-6">
-            <small class="text-muted d-block mb-1">Preferred Location</small>
-            <span class="fw-semibold">
-              {% if profile.preferred_location %}{{ profile.preferred_location }}
-              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
-            </span>
-          </div>
-          <div class="col-sm-6">
-            <small class="text-muted d-block mb-1">Minimum Salary</small>
-            <span class="fw-semibold">
-              {% if profile.preferred_salary_min %}UGX {{ profile.preferred_salary_min|floatformat:0 }}
-              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
-            </span>
-          </div>
-        </div>
-
-        <hr>
-
-        <div class="mb-3">
-          <small class="text-muted d-block mb-2">Skills</small>
-          {% if profile.skills.all %}
-            {% for skill in profile.skills.all %}
-            <span class="badge bg-primary me-1 mb-1">{{ skill.name }}</span>
-            {% endfor %}
-          {% else %}
-            <span class="text-muted fst-italic">No skills added yet</span>
-          {% endif %}
-        </div>
-
-        <div>
-          <small class="text-muted d-block mb-2">Preferred Categories</small>
-          {% if profile.preferred_categories.all %}
-            {% for cat in profile.preferred_categories.all %}
-            <span class="badge bg-secondary me-1 mb-1">{{ cat.name }}</span>
-            {% endfor %}
-          {% else %}
-            <span class="text-muted fst-italic">No categories selected</span>
-          {% endif %}
-        </div>
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="profile-info-tile h-100 p-3 text-center">
+        <div class="profile-info-icon mb-2"><i class="bi bi-bar-chart-fill"></i></div>
+        <small class="text-muted d-block mb-1">Experience</small>
+        <span class="fw-semibold">
+          {% if profile.experience_level == "entry" %}Entry Level
+          {% elif profile.experience_level == "mid" %}Mid Level
+          {% elif profile.experience_level == "senior" %}Senior Level
+          {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+        </span>
       </div>
     </div>
-
+    <div class="col-6 col-md-3">
+      <div class="profile-info-tile h-100 p-3 text-center">
+        <div class="profile-info-icon mb-2"><i class="bi bi-briefcase-fill"></i></div>
+        <small class="text-muted d-block mb-1">Job Type</small>
+        <span class="fw-semibold">
+          {% if profile.preferred_job_type %}
+            {{ profile.get_preferred_job_type_display }}
+          {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+        </span>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="profile-info-tile h-100 p-3 text-center">
+        <div class="profile-info-icon mb-2"><i class="bi bi-geo-alt-fill"></i></div>
+        <small class="text-muted d-block mb-1">Location</small>
+        <span class="fw-semibold">
+          {% if profile.preferred_location %}{{ profile.preferred_location }}
+          {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+        </span>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="profile-info-tile h-100 p-3 text-center">
+        <div class="profile-info-icon mb-2"><i class="bi bi-cash-stack"></i></div>
+        <small class="text-muted d-block mb-1">Minimum Salary</small>
+        <span class="fw-semibold">
+          {% if profile.preferred_salary_min %}UGX {{ profile.preferred_salary_min|floatformat:0 }}
+          {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+        </span>
+      </div>
+    </div>
   </div>
-</div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="profile-card h-100 p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-stars me-2 text-primary"></i>Skills</h6>
+        {% if profile.skills.all %}
+          {% for skill in profile.skills.all %}
+          <span class="profile-pill profile-pill-skill">{{ skill.name }}</span>
+          {% endfor %}
+        {% else %}
+          <span class="text-muted fst-italic">No skills added yet</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="profile-card h-100 p-4">
+        <h6 class="fw-bold mb-3"><i class="bi bi-tags-fill me-2 text-primary"></i>Preferred Categories</h6>
+        {% if profile.preferred_categories.all %}
+          {% for cat in profile.preferred_categories.all %}
+          <span class="profile-pill profile-pill-category">{{ cat.name }}</span>
+          {% endfor %}
+        {% else %}
+          <span class="text-muted fst-italic">No categories selected</span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</main>
 {% endblock %}

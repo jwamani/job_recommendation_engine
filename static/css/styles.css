@@ -121,23 +121,69 @@ body {
 }
 
 /* Profile page */
-.profile-card {
-	border: none;
-	border-radius: 12px;
+.profile-hero {
+	position: relative;
+	padding: 3.5rem 0;
+	background-color: #051f46;
+	background-image: linear-gradient(135deg, #0d2f66 0%, #051f46 100%);
 }
 
-.profile-avatar {
-	width: 56px;
-	height: 56px;
-	border-radius: 20%;
-	background-color: #0d6efd;
+.profile-hero-avatar {
+	width: 88px;
+	height: 88px;
+	border-radius: 50%;
+	background-color: rgba(255, 255, 255, 0.15);
+	border: 2px solid rgba(255, 255, 255, 0.4);
 	color: #fff;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-size: 1.5rem;
+	font-size: 2.25rem;
 	font-weight: 600;
 	flex-shrink: 0;
+}
+
+.profile-info-tile {
+	background-color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	border-radius: 12px;
+}
+
+.profile-info-icon {
+	width: 44px;
+	height: 44px;
+	background-color: #e7f1ff;
+	color: #0d6efd;
+	border-radius: 12px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.1rem;
+}
+
+.profile-card {
+	background-color: #fff;
+	border: 1px solid rgba(0, 0, 0, 0.06);
+	border-radius: 12px;
+}
+
+.profile-pill {
+	display: inline-block;
+	padding: 0.35rem 0.8rem;
+	border-radius: 999px;
+	font-size: 0.85rem;
+	font-weight: 500;
+	margin: 0 0.4rem 0.4rem 0;
+}
+
+.profile-pill-skill {
+	background-color: #e7f1ff;
+	color: #0d5fd6;
+}
+
+.profile-pill-category {
+	background-color: #f1f2f4;
+	color: #495057;
 }
 
 /* Recommendations page */
