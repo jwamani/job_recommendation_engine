@@ -49,7 +49,7 @@ def profile_edit_view(request: HttpRequest):
     if request.method == 'POST':
         form = ProfileForm(request.POST, instance=profile)
         if form.is_valid():
-            profile = form.save(commit=False)
+            profile = form.save()
             profile.save()
 
             skill_names = [
