@@ -3,133 +3,144 @@
 {% block title %}Browse Jobs — JobMatch{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-  <h1 class="mb-2">Browse Jobs</h1>
-  <p class="text-muted mb-0">Search and filter active job postings, then open a listing for the full details page.</p>
-</div>
+<div class="jobs-page">
+  <section class="jobs-hero">
+    <div class="jobs-hero__content">
+      <p class="jobs-hero__eyebrow mb-2">Browse roles</p>
+      <h1 class="jobs-hero__title mb-3">Find jobs that fit your profile</h1>
+    
+    </div>
+  </section>
 
-<form method="get" class="row g-3 mb-4">
-  <div class="col-12 col-md-5">
-    <label for="id_q" class="form-label">Search</label>
-    <input
-      type="text"
-      id="id_q"
-      name="q"
-      value="{{ search_query }}"
-      class="form-control"
-      placeholder="Search by title, company, description, or location"
-    />
-  </div>
-  <div class="col-12 col-md-4">
-    <label for="id_location" class="form-label">Location</label>
-    {{ filter.form.location }}
-  </div>
-  <div class="col-12 col-md-3">
-    <label for="id_category" class="form-label">Category</label>
-    {{ filter.form.category }}
-  </div>
-  <div class="col-12 col-md-3">
-    <label for="id_job_type" class="form-label">Job Type</label>
-    {{ filter.form.job_type }}
-  </div>
-  <div class="col-12 col-md-3">
-    <label for="id_experience_level" class="form-label">Experience Level</label>
-    {{ filter.form.experience_level }}
-  </div>
-  <div class="col-12 col-md-3">
-    <label for="id_salary_min" class="form-label">Minimum Salary</label>
-    {{ filter.form.salary_min }}
-  </div>
-  <div class="col-12 col-md-3 d-flex align-items-end gap-2">
-    <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
-    <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-secondary">Reset</a>
-  </div>
-</form>
-
-{% if search_query or filter.form.location.value or filter.form.category.value or filter.form.job_type.value or filter.form.experience_level.value or filter.form.salary_min.value %}
-  <div class="alert alert-light border mb-4">
-    <strong>Active filters:</strong>
-    {% if search_query %}<span class="me-2">Search: {{ search_query }}</span>{% endif %}
-    {% if filter.form.location.value %}<span class="me-2">Location: {{ filter.form.location.value }}</span>{% endif %}
-    {% if filter.form.category.value %}<span class="me-2">Category: {{ filter.form.category.value }}</span>{% endif %}
-    {% if filter.form.job_type.value %}<span class="me-2">Type: {{ filter.form.job_type.value }}</span>{% endif %}
-    {% if filter.form.experience_level.value %}<span class="me-2">Experience: {{ filter.form.experience_level.value }}</span>{% endif %}
-    {% if filter.form.salary_min.value %}<span class="me-2">Min salary: {{ filter.form.salary_min.value }}</span>{% endif %}
-  </div>
-{% endif %}
-
-<div class="row g-4">
-  {% for job in object_list %}
-    <div class="col-12 col-lg-6">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-            <div>
-              <h5 class="card-title mb-1">{{ job.title }}</h5>
-              <h6 class="card-subtitle text-muted">{{ job.company }} &middot; {{ job.location }}</h6>
-            </div>
-            <span class="badge text-bg-secondary">{{ job.get_job_type_display }}</span>
-          </div>
-
-          <p class="card-text text-muted mb-3">{{ job.description|truncatewords:28 }}</p>
-
-          <div class="small text-muted mb-3">
-            <span class="me-3">Category: {{ job.category }}</span>
-            <span class="me-3">Experience: {{ job.get_experience_level_display }}</span>
-            {% if job.salary_min or job.salary_max %}
-              <span>
-                Salary:
-                {% if job.salary_min %}{{ job.salary_min }}{% endif %}
-                {% if job.salary_min and job.salary_max %} - {% endif %}
-                {% if job.salary_max %}{{ job.salary_max }}{% endif %}
-              </span>
-            {% endif %}
-          </div>
-
-          {% if job.required_skills.all %}
-            <div class="mb-3">
-              {% for skill in job.required_skills.all|slice:":4" %}
-                <span class="badge text-bg-light border text-dark me-1 mb-1">{{ skill.name }}</span>
-              {% endfor %}
-            </div>
-          {% endif %}
-
-          <div class="mt-auto">
-            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
-          </div>
+  <section class="jobs-toolbar">
+    <form method="get" class="jobs-filter-card">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-5">
+          <label for="id_q" class="form-label jobs-label">Search</label>
+          <input
+            type="text"
+            id="id_q"
+            name="q"
+            value="{{ search_query }}"
+            class="form-control jobs-input"
+            placeholder="Title, company, location, or description"
+          />
+        </div>
+        <div class="col-12 col-md-4">
+          <label for="id_location" class="form-label jobs-label">Location</label>
+          {{ filter.form.location }}
+        </div>
+        <div class="col-12 col-md-3">
+          <label for="id_category" class="form-label jobs-label">Category</label>
+          {{ filter.form.category }}
+        </div>
+        <div class="col-12 col-md-3">
+          <label for="id_job_type" class="form-label jobs-label">Job Type</label>
+          {{ filter.form.job_type }}
+        </div>
+        <div class="col-12 col-md-3">
+          <label for="id_experience_level" class="form-label jobs-label">Experience Level</label>
+          {{ filter.form.experience_level }}
+        </div>
+        <div class="col-12 col-md-3">
+          <label for="id_salary_min" class="form-label jobs-label">Minimum Salary</label>
+          {{ filter.form.salary_min }}
+        </div>
+        <div class="col-12 col-md-3 d-flex align-items-end gap-2">
+          <button type="submit" class="btn btn-primary jobs-button flex-grow-1">Filter</button>
+          <a href="{% url 'jobs:job_list' %}" class="btn btn-outline-secondary jobs-reset">Reset</a>
         </div>
       </div>
+    </form>
+  </section>
+
+  {% if search_query or filter.form.location.value or filter.form.category.value or filter.form.job_type.value or filter.form.experience_level.value or filter.form.salary_min.value %}
+    <section class="jobs-active-filters alert alert-light border mb-4">
+      <strong>Active filters:</strong>
+      {% if search_query %}<span class="me-2">Search: {{ search_query }}</span>{% endif %}
+      {% if filter.form.location.value %}<span class="me-2">Location: {{ filter.form.location.value }}</span>{% endif %}
+      {% if filter.form.category.value %}<span class="me-2">Category: {{ filter.form.category.value }}</span>{% endif %}
+      {% if filter.form.job_type.value %}<span class="me-2">Type: {{ filter.form.job_type.value }}</span>{% endif %}
+      {% if filter.form.experience_level.value %}<span class="me-2">Experience: {{ filter.form.experience_level.value }}</span>{% endif %}
+      {% if filter.form.salary_min.value %}<span class="me-2">Min salary: {{ filter.form.salary_min.value }}</span>{% endif %}
+    </section>
+  {% endif %}
+
+  <section class="jobs-results">
+    <div class="row g-4">
+      {% for job in object_list %}
+        <div class="col-12 col-lg-6">
+          <div class="card jobs-card h-100 shadow-sm">
+            <div class="card-body jobs-card__body d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+                <div>
+                  <h5 class="card-title jobs-card__title mb-1">{{ job.title }}</h5>
+                  <h6 class="card-subtitle jobs-card__meta text-muted">{{ job.company }} &middot; {{ job.location }}</h6>
+                </div>
+                <span class="badge jobs-badge">{{ job.get_job_type_display }}</span>
+              </div>
+
+              <p class="card-text jobs-card__text mb-3">{{ job.description|truncatewords:28 }}</p>
+
+              <div class="jobs-card__details small text-muted mb-3">
+                <span class="me-3">Category: {{ job.category }}</span>
+                <span class="me-3">Experience: {{ job.get_experience_level_display }}</span>
+                {% if job.salary_min or job.salary_max %}
+                  <span>
+                    Salary:
+                    {% if job.salary_min %}{{ job.salary_min }}{% endif %}
+                    {% if job.salary_min and job.salary_max %} - {% endif %}
+                    {% if job.salary_max %}{{ job.salary_max }}{% endif %}
+                  </span>
+                {% endif %}
+              </div>
+
+              {% if job.required_skills.all %}
+                <div class="jobs-card__skills mb-3">
+                  {% for skill in job.required_skills.all|slice:":4" %}
+                    <span class="badge jobs-skill-badge me-1 mb-1">{{ skill.name }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <div class="mt-auto">
+                <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-primary jobs-view-btn btn-sm">View Details</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12">
+          <div class="alert alert-warning mb-0">No active jobs match the current filters.</div>
+        </div>
+      {% endfor %}
     </div>
-  {% empty %}
-    <div class="col-12">
-      <div class="alert alert-warning mb-0">No active jobs match the current filters.</div>
-    </div>
-  {% endfor %}
+  </section>
+
+  {% if is_paginated %}
+    <nav class="jobs-pagination mt-4" aria-label="Job pagination">
+      <ul class="pagination justify-content-center mb-0">
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Previous</span></li>
+        {% endif %}
+
+        <li class="page-item disabled">
+          <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        </li>
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">Next</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 </div>
-
-{% if is_paginated %}
-  <nav class="mt-4" aria-label="Job pagination">
-    <ul class="pagination justify-content-center mb-0">
-      {% if page_obj.has_previous %}
-        <li class="page-item">
-          <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">Previous</span></li>
-      {% endif %}
-
-      <li class="page-item disabled">
-        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-      </li>
-
-      {% if page_obj.has_next %}
-        <li class="page-item">
-          <a class="page-link" href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
-        </li>
-      {% else %}
-        <li class="page-item disabled"><span class="page-link">Next</span></li>
-      {% endif %}
-    </ul>
-  </nav>
-{% endif %}
 {% endblock %}
