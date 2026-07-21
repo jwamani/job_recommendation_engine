@@ -1,5 +1,8 @@
 from django.urls import path
+from . import views
 
-app_name = "matching"
+app_name = 'matching'
 
-urlpatterns = []
+urlpatterns = [
+    path('recommendations/', views.recommendations, name='recommendations'),
+]
