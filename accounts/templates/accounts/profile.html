@@ -2,57 +2,89 @@
 {% block title %}My Profile - JobMatch{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-md-7">
-    <h2 class="mb-4">My Profile</h2>
+  <div class="col-lg-8">
 
-    <div class="card mb-4">
-      <div class="card-body">
-        <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
-        <p class="card-text text-muted">{{ user.email }}</p>
-        <p class="card-text">
-          {% for skill in profile.skills.all %}
-          <span class="badge bg-primary me-1">{{ skill.name }}</span>
-          {% endfor %}
-        </p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2 class="mb-0">My Profile</h2>
+      <a href="{% url 'accounts:profile_edit' %}" class="btn btn-outline-primary">
+        <i class="bi bi-pencil-square"></i> Edit Profile
+      </a>
+    </div>
+
+    <div class="card profile-card shadow-sm mb-4">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-4">
+          <div class="profile-avatar me-3">
+            {{ user.get_full_name|default:user.username|make_list|first|upper }}
+          </div>
+          <div>
+            <h4 class="mb-0">{{ user.get_full_name|default:user.username }}</h4>
+            <span class="text-muted">{{ user.email }}</span>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="row g-3 mb-3">
+          <div class="col-sm-6">
+            <small class="text-muted d-block mb-1">Experience Level</small>
+            <span class="fw-semibold">
+              {% if profile.experience_level == "entry" %}Entry Level
+              {% elif profile.experience_level == "mid" %}Mid Level
+              {% elif profile.experience_level == "senior" %}Senior Level
+              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+            </span>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted d-block mb-1">Preferred Job Type</small>
+            <span class="fw-semibold">
+              {% if profile.preferred_job_type %}
+                {{ profile.get_preferred_job_type_display }}
+              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+            </span>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted d-block mb-1">Preferred Location</small>
+            <span class="fw-semibold">
+              {% if profile.preferred_location %}{{ profile.preferred_location }}
+              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+            </span>
+          </div>
+          <div class="col-sm-6">
+            <small class="text-muted d-block mb-1">Minimum Salary</small>
+            <span class="fw-semibold">
+              {% if profile.preferred_salary_min %}UGX {{ profile.preferred_salary_min|floatformat:0 }}
+              {% else %}<span class="text-muted fst-italic">Not set</span>{% endif %}
+            </span>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="mb-3">
+          <small class="text-muted d-block mb-2">Skills</small>
+          {% if profile.skills.all %}
+            {% for skill in profile.skills.all %}
+            <span class="badge bg-primary me-1 mb-1">{{ skill.name }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="text-muted fst-italic">No skills added yet</span>
+          {% endif %}
+        </div>
+
+        <div>
+          <small class="text-muted d-block mb-2">Preferred Categories</small>
+          {% if profile.preferred_categories.all %}
+            {% for cat in profile.preferred_categories.all %}
+            <span class="badge bg-secondary me-1 mb-1">{{ cat.name }}</span>
+            {% endfor %}
+          {% else %}
+            <span class="text-muted fst-italic">No categories selected</span>
+          {% endif %}
+        </div>
       </div>
     </div>
 
-    <form method="post">
-      {% csrf_token %}
-      <div class="mb-3">
-        <label class="form-label" for="id_experience_level">Experience Level</label>
-        <select class="form-select" id="id_experience_level" name="experience_level">
-          <option value="entry" {% if profile.experience_level == "entry" %}selected{% endif %}>Entry Level</option>
-          <option value="mid" {% if profile.experience_level == "mid" %}selected{% endif %}>Mid Level</option>
-          <option value="senior" {% if profile.experience_level == "senior" %}selected{% endif %}>Senior Level</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label" for="id_preferred_location">Preferred Location</label>
-        <input type="text" class="form-control" id="id_preferred_location" name="preferred_location"
-               value="{{ profile.preferred_location }}">
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label" for="id_preferred_job_type">Preferred Job Type</label>
-        <select class="form-select" id="id_preferred_job_type" name="preferred_job_type">
-          <option value="full-time" {% if profile.preferred_job_type == "full-time" %}selected{% endif %}>Full-time</option>
-          <option value="part-time" {% if profile.preferred_job_type == "part-time" %}selected{% endif %}>Part-time</option>
-          <option value="contract" {% if profile.preferred_job_type == "contract" %}selected{% endif %}>Contract</option>
-          <option value="remote" {% if profile.preferred_job_type == "remote" %}selected{% endif %}>Remote</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label" for="id_skills">Skills</label>
-        <input type="text" class="form-control" id="id_skills" name="skills"
-               value="{{ skills_csv }}">
-        <div class="form-text">Comma-separated for now, e.g. "Python, SQL, Django".</div>
-      </div>
-
-      <button type="submit" class="btn btn-primary">Save Changes</button>
-    </form>
   </div>
 </div>
 {% endblock %}
