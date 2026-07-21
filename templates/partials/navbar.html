@@ -1,12 +1,11 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">JobMatch</a>
+    {% url 'jobs:job_list' as jobs_url %}
+    {% url 'accounts:login' as login_url %}
+    <a class="navbar-brand" href="{{ jobs_url }}">JobMatch</a>
     <div class="collapse navbar-collapse">
       <ul class="navbar-nav ms-auto">
-        {% url 'jobs:job_list' as jobs_url %}
-        {% if jobs_url %}
         <li class="nav-item"><a class="nav-link" href="{{ jobs_url }}">Browse Jobs</a></li>
-        {% endif %}
 
         {% url 'matching:recommendations' as recommendations_url %}
         {% if recommendations_url %}
@@ -18,7 +17,9 @@
         <li class="nav-item"><a class="nav-link" href="{{ applications_url }}">My Applications</a></li>
         {% endif %}
 
-        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Log In</a></li>
+        {% if login_url %}
+        <li class="nav-item"><a class="nav-link" href="{{ login_url }}">Log In</a></li>
+        {% endif %}
       </ul>
     </div>
   </div>
