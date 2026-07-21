@@ -26,8 +26,8 @@ def seed_job_postings(apps, schema_editor):
             "experience_level": "entry",
             "job_type": "full-time",
             "location": "Accra",
-            "salary_min": 2500,
-            "salary_max": 4000,
+            "salary_min": 2500000,
+            "salary_max": 4000000,
         },
         {
             "title": "Data Analyst",
@@ -38,8 +38,8 @@ def seed_job_postings(apps, schema_editor):
             "experience_level": "mid",
             "job_type": "full-time",
             "location": "Remote",
-            "salary_min": 3200,
-            "salary_max": 5200,
+            "salary_min": 2200000,
+            "salary_max": 5200000,
         },
         {
             "title": "Product Designer",
@@ -50,8 +50,8 @@ def seed_job_postings(apps, schema_editor):
             "experience_level": "mid",
             "job_type": "contract",
             "location": "Kumasi",
-            "salary_min": 2800,
-            "salary_max": 4500,
+            "salary_min": 1700000,
+            "salary_max": 3500000,
         },
         {
             "title": "Growth Marketing Associate",
@@ -62,8 +62,8 @@ def seed_job_postings(apps, schema_editor):
             "experience_level": "entry",
             "job_type": "part-time",
             "location": "Accra",
-            "salary_min": 1800,
-            "salary_max": 2600,
+            "salary_min": 1800000,
+            "salary_max": 2600000,
         },
         {
             "title": "Senior Backend Engineer",
@@ -74,8 +74,8 @@ def seed_job_postings(apps, schema_editor):
             "experience_level": "senior",
             "job_type": "remote",
             "location": "Remote",
-            "salary_min": 6000,
-            "salary_max": 9000,
+            "salary_min": 6000000,
+            "salary_max": 9000000,
         },
     ]
 
