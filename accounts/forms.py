@@ -57,7 +57,7 @@ class ProfileForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'e.g. 500000',
             }),
-            'preferred_categories': forms.CheckboxSelectMultiple(),
+            'preferred_categories': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
         }
 
     def __init__(self, *args, **kwargs):
