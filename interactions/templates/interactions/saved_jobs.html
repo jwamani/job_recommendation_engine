@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Saved & Applied Jobs — JobMatch{% endblock %}
+{% block content %}
+<h1 class="h3 mb-4">Saved &amp; Applied Jobs</h1>
+
+<h2 class="h5 mb-3">Saved</h2>
+<div class="row g-4 mb-5">
+  {% for job in saved_jobs %}
+  <div class="col-lg-6">
+    <article class="card h-100 shadow-sm border-0">
+      <div class="card-body d-flex flex-column">
+        <h3 class="h5 mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
+        <p class="text-muted mb-2">{{ job.company }} · {{ job.location }}</p>
+        <p class="small text-muted mb-0">{{ job.category.name }} · {{ job.get_experience_level_display }}</p>
+      </div>
+    </article>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-secondary mb-0">You haven't saved any jobs yet.</div>
+  </div>
+  {% endfor %}
+</div>
+
+<h2 class="h5 mb-3">Applied</h2>
+<div class="row g-4">
+  {% for job in applied_jobs %}
+  <div class="col-lg-6">
+    <article class="card h-100 shadow-sm border-0">
+      <div class="card-body d-flex flex-column">
+        <h3 class="h5 mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
+        <p class="text-muted mb-2">{{ job.company }} · {{ job.location }}</p>
+        <p class="small text-muted mb-0">{{ job.category.name }} · {{ job.get_experience_level_display }}</p>
+      </div>
+    </article>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="alert alert-secondary mb-0">You haven't applied to any jobs yet.</div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
