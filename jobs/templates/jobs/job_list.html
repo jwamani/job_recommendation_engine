@@ -94,8 +94,17 @@
             </div>
           {% endif %}
 
-          <div class="mt-auto">
-            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+          <div class="mt-auto d-flex gap-2">
+            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm flex-fill">View Details</a>
+            {% if user.is_authenticated %}
+            <form method="post" action="{% url 'interactions:log' %}">
+              {% csrf_token %}
+              <input type="hidden" name="job_id" value="{{ job.pk }}">
+              <input type="hidden" name="action" value="dismiss">
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <button type="submit" class="btn btn-outline-secondary btn-sm" title="Not interested">Not interested</button>
+            </form>
+            {% endif %}
           </div>
         </div>
       </div>
