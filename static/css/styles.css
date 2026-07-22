@@ -186,6 +186,27 @@ body {
 	color: #495057;
 }
 
+/* Job listing cards */
+.jobtype-full-time {
+	background-color: #e6f7ed;
+	color: #1a7f4a;
+}
+
+.jobtype-part-time {
+	background-color: #e7f1ff;
+	color: #0d5fd6;
+}
+
+.jobtype-contract {
+	background-color: #fff4e0;
+	color: #b3720b;
+}
+
+.jobtype-remote {
+	background-color: #e6f4f4;
+	color: #0f7a72;
+}
+
 /* Recommendations page */
 .recs-hero {
 	position: relative;
