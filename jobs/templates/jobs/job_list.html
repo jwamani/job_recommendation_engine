@@ -2,11 +2,26 @@
 
 {% block title %}Browse Jobs — JobMatch{% endblock %}
 
-{% block content %}
-<div class="mb-4">
-  <h1 class="mb-2">Browse Jobs</h1>
-  <p class="text-muted mb-0">Search and filter active job postings, then open a listing for the full details page.</p>
-</div>
+{% block main %}
+<section class="recs-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center text-white">
+        <h1 class="fw-bold mb-2">Browse Jobs</h1>
+        <p class="lead mb-0 opacity-90">Search and filter active job postings, then open a listing for the full details page.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="container py-5">
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} mb-2" role="alert">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
 <form method="get" class="row g-3 mb-4">
   <div class="col-12 col-md-5">
@@ -141,4 +156,5 @@
     </ul>
   </nav>
 {% endif %}
+</main>
 {% endblock %}
