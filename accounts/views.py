@@ -51,6 +51,7 @@ def profile_edit_view(request: HttpRequest):
         if form.is_valid():
             profile = form.save()
             profile.save()
+            form.save_m2m()
 
             skill_names = [
                 name.strip()
