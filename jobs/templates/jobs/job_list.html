@@ -76,29 +76,26 @@
 <div class="row g-4">
   {% for job in object_list %}
     <div class="col-12 col-lg-6">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-            <div>
-              <h5 class="card-title mb-1">{{ job.title }}</h5>
-              <h6 class="card-subtitle text-muted">{{ job.company }} &middot; {{ job.location }}</h6>
+      <div class="recs-card h-100">
+        <div class="card-body d-flex flex-column p-4">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div class="d-flex align-items-start gap-3">
+              <div class="recs-company-icon">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <div>
+                <h5 class="card-title mb-1">{{ job.title }}</h5>
+                <h6 class="card-subtitle text-muted fw-normal">{{ job.company }} &middot; {{ job.location }}</h6>
+              </div>
             </div>
-            <span class="badge text-bg-secondary">{{ job.get_job_type_display }}</span>
+            <span class="recs-match jobtype-{{ job.job_type }}">{{ job.get_job_type_display }}</span>
           </div>
 
           <p class="card-text text-muted mb-3">{{ job.description|truncatewords:28 }}</p>
 
-          <div class="small text-muted mb-3">
-            <span class="me-3">Category: {{ job.category }}</span>
-            <span class="me-3">Experience: {{ job.get_experience_level_display }}</span>
-            {% if job.salary_min or job.salary_max %}
-              <span>
-                Salary:
-                {% if job.salary_min %}{{ job.salary_min }}{% endif %}
-                {% if job.salary_min and job.salary_max %} - {% endif %}
-                {% if job.salary_max %}{{ job.salary_max }}{% endif %}
-              </span>
-            {% endif %}
+          <div class="mb-3">
+            <span class="profile-pill profile-pill-skill">{{ job.category }}</span>
+            <span class="profile-pill profile-pill-category">{{ job.get_experience_level_display }}</span>
           </div>
 
           {% if job.required_skills.all %}
@@ -109,17 +106,30 @@
             </div>
           {% endif %}
 
-          <div class="mt-auto d-flex gap-2">
-            <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm flex-fill">View Details</a>
-            {% if user.is_authenticated %}
-            <form method="post" action="{% url 'interactions:log' %}">
-              {% csrf_token %}
-              <input type="hidden" name="job_id" value="{{ job.pk }}">
-              <input type="hidden" name="action" value="dismiss">
-              <input type="hidden" name="next" value="{{ request.get_full_path }}">
-              <button type="submit" class="btn btn-outline-secondary btn-sm" title="Not interested">Not interested</button>
-            </form>
-            {% endif %}
+          <hr class="mt-auto">
+
+          <div class="d-flex justify-content-between align-items-center">
+            <span>
+              {% if job.salary_min %}
+                <span class="badge text-bg-success-subtle text-success-emphasis fw-semibold">
+                  UGX {{ job.salary_min|floatformat:0 }}{% if job.salary_max %} - {{ job.salary_max|floatformat:0 }}{% endif %}
+                </span>
+              {% else %}
+                <span class="text-muted small">Salary not listed</span>
+              {% endif %}
+            </span>
+            <div class="d-flex align-items-center gap-3">
+              {% if user.is_authenticated %}
+              <form method="post" action="{% url 'interactions:log' %}">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ job.pk }}">
+                <input type="hidden" name="action" value="dismiss">
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button type="submit" class="btn btn-link btn-sm text-muted text-decoration-none p-0">Not interested</button>
+              </form>
+              {% endif %}
+              <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
+            </div>
           </div>
         </div>
       </div>
