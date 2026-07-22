@@ -8,7 +8,7 @@
         {{ user.get_full_name|default:user.username|make_list|first|upper }}
       </div>
       <div class="me-auto">
-        <h2 class="fw-bold text-white mb-1">{{ user.get_full_name|default:user.username }}</h2>
+        <h2 class="fw-bold text-white mb-1">{{ user.get_full_name|default:user.username|title }}</h2>
         <p class="text-white-50 mb-0"><i class="bi bi-envelope me-2"></i>{{ user.email }}</p>
       </div>
       <a href="{% url 'accounts:profile_edit' %}" class="btn btn-light fw-semibold px-4">

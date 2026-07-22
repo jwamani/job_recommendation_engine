@@ -25,12 +25,17 @@
         {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'accounts:profile' %}">
-            {{ user.get_full_name|default:user.username }}
+            Profile
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'accounts:logout' %}">Log Out</a>
         </li>
+        {% if user.is_superuser %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'admin:index' %}">Admin</a>
+        </li>
+        {% endif %}
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'accounts:login' %}">Log In</a>
