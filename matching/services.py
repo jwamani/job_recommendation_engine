@@ -1,5 +1,16 @@
+from collections import defaultdict
+
 from accounts.models import Profile
+from interactions.models import Interaction
+from interactions.services import get_latest_save_dismiss_states
 from jobs.models import JobPosting
+
+INTERACTION_WEIGHTS = {
+    "apply": 5,
+    "save": 3,
+    "view": 1,
+    "dismiss": -3,
+}
 
 
 def recommend_job_score(profile: Profile, job_posting: JobPosting) -> float:
@@ -46,3 +57,50 @@ def recommend_job_score(profile: Profile, job_posting: JobPosting) -> float:
     )
 
     return total_score
+
+
+def _category_interaction_points(user):
+    """
+    Points per job category from the user's own interaction history,
+    weighted per SDD §5 (apply/save/view positive, dismiss negative).
+    """
+    points = defaultdict(int)
+    rows = Interaction.objects.filter(user=user).values_list("job__category_id", "action")
+    for category_id, action in rows:
+        points[category_id] += INTERACTION_WEIGHTS.get(action, 0)
+    return points
+
+
+def get_recommendations_for_user(user, limit=20):
+    """
+    Rank active job postings for a user: the profile-based match score from
+    recommend_job_score(), nudged by a bounded bonus from the user's past
+    interactions with jobs in the same category. Jobs the user has dismissed
+    (and not re-saved since) are excluded outright.
+    """
+    profile = getattr(user, "profile", None)
+    if profile is None:
+        return []
+
+    dismissed_job_ids = {
+        job_id
+        for job_id, action in get_latest_save_dismiss_states(user).items()
+        if action == "dismiss"
+    }
+    category_points = _category_interaction_points(user)
+
+    jobs = (
+        JobPosting.objects.filter(is_active=True)
+        .exclude(id__in=dismissed_job_ids)
+        .select_related("category")
+        .prefetch_related("required_skills")
+    )
+
+    scored = []
+    for job in jobs:
+        bonus = max(-0.3, min(0.3, category_points.get(job.category_id, 0) / 50))
+        total = max(0.0, min(1.0, recommend_job_score(profile, job) + bonus))
+        scored.append({"job": job, "score": round(total * 100)})
+
+    scored.sort(key=lambda item: item["score"], reverse=True)
+    return scored[:limit]
