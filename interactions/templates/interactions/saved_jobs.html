@@ -1,50 +1,105 @@
 {% extends "base.html" %}
 {% block title %}Saved & Applied Jobs — JobMatch{% endblock %}
-{% block content %}
-<h1 class="h3 mb-4">Saved &amp; Applied Jobs</h1>
-
-<h2 class="h5 mb-3">Saved</h2>
-<div class="row g-4 mb-5">
-  {% for job in saved_jobs %}
-  <div class="col-lg-6">
-    <article class="card h-100 shadow-sm border-0">
-      <div class="card-body d-flex flex-column">
-        <h3 class="h5 mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
-        <p class="text-muted mb-2">{{ job.company }} · {{ job.location }}</p>
-        <p class="small text-muted mb-2">{{ job.category.name }} · {{ job.get_experience_level_display }}</p>
-        <form method="post" action="{% url 'interactions:log' %}" class="mt-auto">
-          {% csrf_token %}
-          <input type="hidden" name="job_id" value="{{ job.pk }}">
-          <input type="hidden" name="action" value="dismiss">
-          <input type="hidden" name="next" value="{% url 'interactions:saved_jobs' %}">
-          <button type="submit" class="btn btn-outline-secondary btn-sm">Unsave</button>
-        </form>
+{% block main %}
+<section class="jobs-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center text-white">
+        <h1 class="fw-bold mb-2">Saved &amp; Applied Jobs</h1>
+        <p class="lead mb-0 opacity-90">Keep track of the roles you're watching and the ones you've already applied to.</p>
       </div>
-    </article>
+    </div>
   </div>
-  {% empty %}
-  <div class="col-12">
-    <div class="alert alert-secondary mb-0">You haven't saved any jobs yet.</div>
-  </div>
-  {% endfor %}
-</div>
+</section>
 
-<h2 class="h5 mb-3">Applied</h2>
-<div class="row g-4">
-  {% for job in applied_jobs %}
-  <div class="col-lg-6">
-    <article class="card h-100 shadow-sm border-0">
-      <div class="card-body d-flex flex-column">
-        <h3 class="h5 mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
-        <p class="text-muted mb-2">{{ job.company }} · {{ job.location }}</p>
-        <p class="small text-muted mb-0">{{ job.category.name }} · {{ job.get_experience_level_display }}</p>
+<main class="container py-5">
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <div class="job-section-icon"><i class="bi bi-bookmark-fill"></i></div>
+    <h2 class="h5 fw-bold mb-0">Saved</h2>
+    <span class="text-muted">({{ saved_jobs|length }})</span>
+  </div>
+
+  <div class="row g-4 mb-5">
+    {% for job in saved_jobs %}
+    <div class="col-lg-6">
+      <article class="job-card h-100 p-4">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+          <div class="d-flex align-items-start gap-3">
+            <div class="job-card-icon"><i class="bi bi-building"></i></div>
+            <div>
+              <h3 class="h6 fw-bold mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
+              <div class="text-muted small">
+                <i class="bi bi-briefcase me-1"></i>{{ job.company }}
+                <span class="mx-1">&middot;</span>
+                <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+              </div>
+            </div>
+          </div>
+          <span class="job-pill jobtype-{{ job.job_type }}">{{ job.get_job_type_display }}</span>
+        </div>
+        <p class="small text-muted mb-3">{{ job.category.name }} &middot; {{ job.get_experience_level_display }}</p>
+        <div class="d-flex gap-2 mt-auto">
+          <a class="btn btn-primary btn-sm px-3" href="{% url 'jobs:job_detail' job.pk %}">View Details</a>
+          <form method="post" action="{% url 'interactions:log' %}">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" value="{{ job.pk }}">
+            <input type="hidden" name="action" value="dismiss">
+            <input type="hidden" name="next" value="{% url 'interactions:saved_jobs' %}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm px-3">Unsave</button>
+          </form>
+        </div>
+      </article>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="jobs-empty text-center py-5">
+        <div class="jobs-empty-icon mb-3"><i class="bi bi-bookmark"></i></div>
+        <h5 class="fw-bold mb-2">No saved jobs yet</h5>
+        <p class="text-muted mb-4">Jobs you save while browsing will show up here.</p>
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-primary px-4">Browse Jobs</a>
       </div>
-    </article>
+    </div>
+    {% endfor %}
   </div>
-  {% empty %}
-  <div class="col-12">
-    <div class="alert alert-secondary mb-0">You haven't applied to any jobs yet.</div>
+
+  <div class="d-flex align-items-center gap-2 mb-4">
+    <div class="job-section-icon"><i class="bi bi-check-circle-fill"></i></div>
+    <h2 class="h5 fw-bold mb-0">Applied</h2>
+    <span class="text-muted">({{ applied_jobs|length }})</span>
   </div>
-  {% endfor %}
-</div>
+
+  <div class="row g-4">
+    {% for job in applied_jobs %}
+    <div class="col-lg-6">
+      <article class="job-card h-100 p-4">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+          <div class="d-flex align-items-start gap-3">
+            <div class="job-card-icon"><i class="bi bi-building"></i></div>
+            <div>
+              <h3 class="h6 fw-bold mb-1"><a class="text-decoration-none" href="{% url 'jobs:job_detail' job.pk %}">{{ job.title }}</a></h3>
+              <div class="text-muted small">
+                <i class="bi bi-briefcase me-1"></i>{{ job.company }}
+                <span class="mx-1">&middot;</span>
+                <i class="bi bi-geo-alt me-1"></i>{{ job.location }}
+              </div>
+            </div>
+          </div>
+          <span class="job-pill job-pill-applied"><i class="bi bi-check-circle-fill me-1"></i>Applied</span>
+        </div>
+        <p class="small text-muted mb-3">{{ job.category.name }} &middot; {{ job.get_experience_level_display }}</p>
+        <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'jobs:job_detail' job.pk %}">View Details</a>
+      </article>
+    </div>
+    {% empty %}
+    <div class="col-12">
+      <div class="jobs-empty text-center py-5">
+        <div class="jobs-empty-icon mb-3"><i class="bi bi-check-circle"></i></div>
+        <h5 class="fw-bold mb-2">No applications yet</h5>
+        <p class="text-muted mb-4">Jobs you apply to will be tracked here.</p>
+        <a href="{% url 'jobs:job_list' %}" class="btn btn-primary px-4">Browse Jobs</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</main>
 {% endblock %}

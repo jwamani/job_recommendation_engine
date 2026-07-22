@@ -1,74 +1,108 @@
 {% extends "base.html" %}
 {% block title %}{{ object.title }} — JobMatch{% endblock %}
-{% block content %}
-<div class="row g-4">
-  <div class="col-lg-8">
-    <article class="card shadow-sm border-0">
-      <div class="card-body p-4">
-        <p class="text-uppercase text-muted small fw-semibold mb-1">{{ object.category.name }}</p>
-        <h1 class="h2 mb-2">{{ object.title }}</h1>
-        <p class="lead mb-3">{{ object.company }} · {{ object.location }}</p>
+{% block main %}
+<section class="jobs-hero">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center text-white">
+        <p class="text-uppercase small fw-semibold mb-2 opacity-75">{{ object.category.name }}</p>
+        <h1 class="fw-bold mb-2">{{ object.title }}</h1>
+        <p class="lead mb-0 opacity-90">
+          <i class="bi bi-briefcase me-1"></i>{{ object.company }}
+          <span class="mx-2">&middot;</span>
+          <i class="bi bi-geo-alt me-1"></i>{{ object.location }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<main class="container py-5">
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <article class="profile-card p-4">
         <div class="d-flex flex-wrap gap-2 mb-4">
-          <span class="badge text-bg-secondary">{{ object.get_experience_level_display }}</span>
-          <span class="badge text-bg-secondary">{{ object.get_job_type_display }}</span>
+          <span class="job-pill jobtype-{{ object.job_type }}">{{ object.get_job_type_display }}</span>
+          <span class="job-pill profile-pill-category">{{ object.get_experience_level_display }}</span>
           {% if object.salary_min %}
-          <span class="badge text-bg-success">UGX {{ object.salary_min|floatformat:0 }}{% if object.salary_max %} - UGX {{ object.salary_max|floatformat:0 }}{% endif %}</span>
+          <span class="job-pill job-pill-applied">
+            <i class="bi bi-cash-stack me-1"></i>UGX {{ object.salary_min|floatformat:0 }}{% if object.salary_max %} - {{ object.salary_max|floatformat:0 }}{% endif %}
+          </span>
           {% endif %}
         </div>
-        <h2 class="h5">Description</h2>
-        <p class="mb-4">{{ object.description|linebreaksbr }}</p>
-        <h2 class="h5">Required skills</h2>
+
+        <h2 class="h5 fw-bold mb-3"><i class="bi bi-file-text me-2 text-primary"></i>Description</h2>
+        <p class="mb-4 text-muted">{{ object.description|linebreaksbr }}</p>
+
+        <h2 class="h5 fw-bold mb-3"><i class="bi bi-stars me-2 text-primary"></i>Required Skills</h2>
         {% if object.required_skills.all %}
-        <ul class="list-inline">
+        <div>
           {% for skill in object.required_skills.all %}
-          <li class="list-inline-item mb-2"><span class="badge rounded-pill text-bg-light border">{{ skill.name }}</span></li>
+          <span class="profile-pill profile-pill-skill">{{ skill.name }}</span>
           {% endfor %}
-        </ul>
+        </div>
         {% else %}
-        <p class="text-muted">No skills listed yet.</p>
+        <p class="text-muted mb-0">No skills listed yet.</p>
         {% endif %}
-      </div>
-    </article>
-  </div>
-  <div class="col-lg-4">
-    <div class="card shadow-sm border-0 mb-3">
-      <div class="card-body">
-        <p class="text-muted small mb-2">Job summary</p>
-        <dl class="row mb-0">
-          <dt class="col-5">Location</dt>
-          <dd class="col-7">{{ object.location }}</dd>
-          <dt class="col-5">Experience</dt>
-          <dd class="col-7">{{ object.get_experience_level_display }}</dd>
-          <dt class="col-5">Type</dt>
-          <dd class="col-7">{{ object.get_job_type_display }}</dd>
-          <dt class="col-5">Posted</dt>
-          <dd class="col-7">{{ object.posted_at|date:"M j, Y" }}</dd>
-        </dl>
-      </div>
+      </article>
     </div>
 
-    {% if user.is_authenticated %}
-    <div class="d-flex gap-2 mb-3">
-      <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
-        {% csrf_token %}
-        <input type="hidden" name="job_id" value="{{ object.pk }}">
-        <input type="hidden" name="action" value="save">
-        <input type="hidden" name="next" value="{{ request.path }}">
-        <button type="submit" class="btn btn-outline-primary w-100">Save</button>
-      </form>
-      <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
-        {% csrf_token %}
-        <input type="hidden" name="job_id" value="{{ object.pk }}">
-        <input type="hidden" name="action" value="apply">
-        <input type="hidden" name="next" value="{{ request.path }}">
-        <button type="submit" class="btn btn-primary w-100">Apply</button>
-      </form>
-    </div>
-    {% else %}
-    <a class="btn btn-outline-secondary w-100 mb-3" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in to save or apply</a>
-    {% endif %}
+    <div class="col-lg-4">
+      <div class="profile-card p-4 mb-3">
+        <p class="text-muted small fw-semibold text-uppercase mb-3">Job Summary</p>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="job-section-icon"><i class="bi bi-geo-alt-fill"></i></div>
+          <div>
+            <small class="text-muted d-block">Location</small>
+            <span class="fw-semibold">{{ object.location }}</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="job-section-icon"><i class="bi bi-bar-chart-fill"></i></div>
+          <div>
+            <small class="text-muted d-block">Experience</small>
+            <span class="fw-semibold">{{ object.get_experience_level_display }}</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3">
+          <div class="job-section-icon"><i class="bi bi-briefcase-fill"></i></div>
+          <div>
+            <small class="text-muted d-block">Type</small>
+            <span class="fw-semibold">{{ object.get_job_type_display }}</span>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <div class="job-section-icon"><i class="bi bi-calendar3"></i></div>
+          <div>
+            <small class="text-muted d-block">Posted</small>
+            <span class="fw-semibold">{{ object.posted_at|date:"M j, Y" }}</span>
+          </div>
+        </div>
+      </div>
 
-    <a class="btn btn-outline-secondary w-100" href="{% url 'jobs:job_list' %}">Back to jobs</a>
+      {% if user.is_authenticated %}
+      <div class="d-flex gap-2 mb-3">
+        <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
+          {% csrf_token %}
+          <input type="hidden" name="job_id" value="{{ object.pk }}">
+          <input type="hidden" name="action" value="save">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-outline-primary w-100"><i class="bi bi-bookmark me-1"></i>Save</button>
+        </form>
+        <form method="post" action="{% url 'interactions:log' %}" class="flex-fill">
+          {% csrf_token %}
+          <input type="hidden" name="job_id" value="{{ object.pk }}">
+          <input type="hidden" name="action" value="apply">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="btn btn-primary w-100"><i class="bi bi-send me-1"></i>Apply</button>
+        </form>
+      </div>
+      {% else %}
+      <a class="btn btn-outline-secondary w-100 mb-3" href="{% url 'accounts:login' %}?next={{ request.path }}">Log in to save or apply</a>
+      {% endif %}
+
+      <a class="btn btn-outline-secondary w-100" href="{% url 'jobs:job_list' %}"><i class="bi bi-arrow-left me-1"></i>Back to jobs</a>
+    </div>
   </div>
-</div>
+</main>
 {% endblock %}
