@@ -2,6 +2,8 @@ from django.db.models import Q
 from django_filters.views import FilterView
 from django.views.generic import DetailView
 
+from interactions.models import Interaction
+
 from .filters import JobPostingFilter
 from .models import JobPosting
 
@@ -43,3 +45,9 @@ class JobDetailView(DetailView):
 
 	def get_queryset(self):
 		return JobPosting.objects.select_related("category").prefetch_related("required_skills")
+
+	def get(self, request, *args, **kwargs):
+		response = super().get(request, *args, **kwargs)
+		if request.user.is_authenticated:
+			Interaction.objects.create(user=request.user, job=self.object, action="view")
+		return response
