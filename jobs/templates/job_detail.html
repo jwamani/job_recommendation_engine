@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load job_extras %}
 {% block title %}{{ object.title }} — JobMatch{% endblock %}
 {% block main %}
 <section class="jobs-hero">
@@ -26,7 +27,7 @@
           <span class="job-pill profile-pill-category">{{ object.get_experience_level_display }}</span>
           {% if object.salary_min %}
           <span class="job-pill job-pill-applied">
-            <i class="bi bi-cash-stack me-1"></i>UGX {{ object.salary_min|floatformat:0 }}{% if object.salary_max %} - {{ object.salary_max|floatformat:0 }}{% endif %}
+            <i class="bi bi-cash-stack me-1"></i>UGX {{ object.salary_min|ugx }}{% if object.salary_max %} - {{ object.salary_max|ugx }}{% endif %}
           </span>
           {% endif %}
         </div>
