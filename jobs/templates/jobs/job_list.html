@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load job_extras %}
 
 {% block title %}Browse Jobs — JobMatch{% endblock %}
 
@@ -112,7 +113,7 @@
             <span>
               {% if job.salary_min %}
                 <span class="badge text-bg-success-subtle text-success-emphasis fw-semibold">
-                  UGX {{ job.salary_min|floatformat:0 }}{% if job.salary_max %} - {{ job.salary_max|floatformat:0 }}{% endif %}
+                  UGX {{ job.salary_min|ugx }}{% if job.salary_max %} - {{ job.salary_max|ugx }}{% endif %}
                 </span>
               {% else %}
                 <span class="text-muted small">Salary not listed</span>
