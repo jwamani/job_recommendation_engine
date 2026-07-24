@@ -1,6 +1,7 @@
+import re
 from collections import defaultdict
 
-from accounts.models import Profile
+from accounts.models import Profile, Skill
 from interactions.models import Interaction
 from interactions.services import get_latest_save_dismiss_states
 from jobs.models import JobPosting
@@ -101,6 +102,78 @@ def get_recommendations_for_user(user, limit=20):
         bonus = max(-0.3, min(0.3, category_points.get(job.category_id, 0) / 50))
         total = max(0.0, min(1.0, recommend_job_score(profile, job) + bonus))
         scored.append({"job": job, "score": round(total * 100)})
+
+    scored.sort(key=lambda item: item["score"], reverse=True)
+    return scored[:limit]
+
+
+def extract_text_from_cv(uploaded_file) -> str:
+    """
+    Pull raw text out of an uploaded CV file (.pdf or .txt).
+    """
+    if uploaded_file.name.lower().endswith(".pdf"):
+        from pypdf import PdfReader
+
+        reader = PdfReader(uploaded_file)
+        return "\n".join(page.extract_text() or "" for page in reader.pages)
+
+    return uploaded_file.read().decode("utf-8", errors="ignore")
+
+
+def extract_skills_from_text(text: str):
+    """
+    Match known Skill names that appear as whole words in the given text.
+    """
+    text_lower = text.lower()
+    return [
+        skill
+        for skill in Skill.objects.all()
+        if re.search(r"\b" + re.escape(skill.name.lower()) + r"\b", text_lower)
+    ]
+
+
+def recommend_job_score_from_skills(cv_skills, job_posting: JobPosting) -> float:
+    """
+    Mirrors the skill-match component of recommend_job_score(), but scored
+    against skills extracted from a CV instead of a stored profile — a CV's
+    raw text carries no reliable signal for experience level, location, or
+    salary preference, so those components of recommend_job_score() are left
+    out here rather than guessed at.
+
+    Returns:
+        float: A score between 0 and 1, where 1 indicates every required
+        skill for the job was found in the CV.
+    """
+    job_skills = set(job_posting.required_skills.all())
+    if not job_skills:
+        return 0.0
+    return len(set(cv_skills) & job_skills) / len(job_skills)
+
+
+def get_matches_for_cv_text(text: str, limit=2):
+    """
+    Rank active job postings against skills extracted from CV text, the same
+    way get_recommendations_for_user() ranks jobs against a stored profile.
+    """
+    cv_skills = set(extract_skills_from_text(text))
+
+    jobs = (
+        JobPosting.objects.filter(is_active=True)
+        .select_related("category")
+        .prefetch_related("required_skills")
+    )
+
+    scored = []
+    for job in jobs:
+        score = recommend_job_score_from_skills(cv_skills, job)
+        if score <= 0:
+            continue
+        matched_skills = cv_skills & set(job.required_skills.all())
+        scored.append({
+            "job": job,
+            "score": round(score * 100),
+            "matched_skills": sorted(skill.name for skill in matched_skills),
+        })
 
     scored.sort(key=lambda item: item["score"], reverse=True)
     return scored[:limit]
