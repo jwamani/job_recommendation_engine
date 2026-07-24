@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load job_extras %}
 
 {% block title %}Browse Jobs — JobMatch{% endblock %}
 
@@ -62,6 +61,73 @@
   </div>
 </form>
 
+<div class="mb-4">
+  {% if user.is_authenticated %}
+    <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#cvUploadPanel">
+      <i class="bi bi-file-earmark-arrow-up me-1"></i>Upload CV
+    </button>
+    <div class="collapse{% if cv_form.errors %} show{% endif %} mt-3" id="cvUploadPanel">
+      <div class="recs-card p-4">
+        <h5 class="mb-1">Find your best-matching jobs</h5>
+        <p class="text-muted small mb-3">Upload your CV (PDF or TXT) and we'll match your skills against active job postings.</p>
+        <form method="post" enctype="multipart/form-data" class="row g-3 align-items-end">
+          {% csrf_token %}
+          <div class="col-12 col-md-8">
+            {{ cv_form.cv_file }}
+            {% if cv_form.cv_file.errors %}
+              <div class="text-danger small mt-1">{{ cv_form.cv_file.errors|striptags }}</div>
+            {% endif %}
+          </div>
+          <div class="col-12 col-md-4">
+            <button type="submit" class="btn btn-primary w-100">Find my matches</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  {% else %}
+    <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-outline-secondary">
+      <i class="bi bi-file-earmark-arrow-up me-1"></i>Log in to upload your CV
+    </a>
+  {% endif %}
+</div>
+
+{% if cv_matches %}
+  <div class="mb-4">
+    <h5 class="mb-3"><i class="bi bi-stars me-2 text-primary"></i>Your top matches</h5>
+    <div class="row g-4 mb-2">
+      {% for match in cv_matches %}
+        <div class="col-12 col-lg-6">
+          <div class="recs-card h-100">
+            <div class="card-body d-flex flex-column p-4">
+              <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                <div>
+                  <h5 class="card-title mb-1">{{ match.job.title }}</h5>
+                  <h6 class="card-subtitle text-muted fw-normal">{{ match.job.company }} &middot; {{ match.job.location }}</h6>
+                </div>
+                {% if match.score >= 80 %}
+                  <span class="recs-match recs-match-high"><i class="bi bi-check-circle-fill me-1"></i>{{ match.score }}%</span>
+                {% elif match.score >= 50 %}
+                  <span class="recs-match recs-match-mid"><i class="bi bi-dash-circle-fill me-1"></i>{{ match.score }}%</span>
+                {% else %}
+                  <span class="recs-match recs-match-low"><i class="bi bi-circle-fill me-1"></i>{{ match.score }}%</span>
+                {% endif %}
+              </div>
+              {% if match.matched_skills %}
+                <div class="mb-3">
+                  {% for skill in match.matched_skills %}
+                    <span class="badge text-bg-light border text-dark me-1 mb-1">{{ skill }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+              <a href="{% url 'jobs:job_detail' match.job.pk %}" class="btn btn-outline-primary btn-sm mt-auto align-self-start">View Details</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
 {% if search_query or filter.form.location.value or filter.form.category.value or filter.form.job_type.value or filter.form.experience_level.value or filter.form.salary_min.value %}
   <div class="alert alert-light border mb-4">
     <strong>Active filters:</strong>
@@ -113,7 +179,7 @@
             <span>
               {% if job.salary_min %}
                 <span class="badge text-bg-success-subtle text-success-emphasis fw-semibold">
-                  UGX {{ job.salary_min|ugx }}{% if job.salary_max %} - {{ job.salary_max|ugx }}{% endif %}
+                  UGX {{ job.salary_min }}{% if job.salary_max %} - {{ job.salary_max }}{% endif %}
                 </span>
               {% else %}
                 <span class="text-muted small">Salary not listed</span>
@@ -121,13 +187,16 @@
             </span>
             <div class="d-flex align-items-center gap-3">
               {% if user.is_authenticated %}
-              <form method="post" action="{% url 'interactions:log' %}">
-                {% csrf_token %}
-                <input type="hidden" name="job_id" value="{{ job.pk }}">
-                <input type="hidden" name="action" value="dismiss">
-                <input type="hidden" name="next" value="{{ request.get_full_path }}">
-                <button type="submit" class="btn btn-link btn-sm text-muted text-decoration-none p-0">Not interested</button>
-              </form>
+                {% url 'interactions:log' as interactions_log_url %}
+                {% if interactions_log_url %}
+                <form method="post" action="{{ interactions_log_url }}">
+                  {% csrf_token %}
+                  <input type="hidden" name="job_id" value="{{ job.pk }}">
+                  <input type="hidden" name="action" value="dismiss">
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button type="submit" class="btn btn-link btn-sm text-muted text-decoration-none p-0">Not interested</button>
+                </form>
+                {% endif %}
               {% endif %}
               <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline-primary btn-sm">View Details</a>
             </div>

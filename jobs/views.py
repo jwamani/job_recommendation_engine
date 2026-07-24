@@ -1,8 +1,12 @@
+from django.contrib import messages
+from django.contrib.auth.views import redirect_to_login
 from django.db.models import Q
 from django_filters.views import FilterView
 from django.views.generic import DetailView
 
 from interactions.models import Interaction
+from matching.forms import CVUploadForm
+from matching.services import extract_text_from_cv, get_matches_for_cv_text
 
 from .filters import JobPostingFilter
 from .models import JobPosting
@@ -36,7 +40,23 @@ class JobListView(FilterView):
 		page_query.pop("page", None)
 		context["query_string"] = page_query.urlencode()
 		context["search_query"] = self.request.GET.get("q", "")
+		context["cv_form"] = getattr(self, "cv_form", None) or CVUploadForm()
+		context["cv_matches"] = getattr(self, "cv_matches", None)
 		return context
+
+	def post(self, request, *args, **kwargs):
+		if not request.user.is_authenticated:
+			return redirect_to_login(request.get_full_path())
+
+		self.cv_form = CVUploadForm(request.POST, request.FILES)
+		self.cv_matches = None
+		if self.cv_form.is_valid():
+			cv_text = extract_text_from_cv(self.cv_form.cleaned_data["cv_file"])
+			self.cv_matches = get_matches_for_cv_text(cv_text, limit=2)
+			if not self.cv_matches:
+				messages.info(request, "We couldn't find a strong job match for your CV yet.")
+
+		return self.get(request, *args, **kwargs)
 
 
 class JobDetailView(DetailView):
