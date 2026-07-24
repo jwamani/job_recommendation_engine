@@ -272,6 +272,11 @@ body {
 	border-radius: 12px;
 }
 
+.recs-breakdown {
+	background-color: #f8f9fa;
+	border-radius: 10px;
+}
+
 .recs-empty-icon {
 	width: 64px;
 	height: 64px;
