@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 
 from accounts.models import Profile
 from interactions.models import Interaction
@@ -12,8 +13,37 @@ INTERACTION_WEIGHTS = {
     "dismiss": -3,
 }
 
+# Attribute weights for recommend_job_score, keyed by label. Must sum to 1.0.
+SCORE_WEIGHTS = {
+    "Skills match": 0.4,
+    "Experience level": 0.2,
+    "Location": 0.2,
+    "Salary": 0.1,
+    "Job type": 0.1,
+}
 
-def recommend_job_score(profile: Profile, job_posting: JobPosting) -> float:
+
+@dataclass
+class ScoreComponent:
+    """One attribute's contribution to a job's match percentage."""
+
+    label: str
+    points: float
+    # Best-case points this attribute could contribute (out of 100), or None
+    # for adjustments (e.g. activity bonus) that aren't rendered as a bar.
+    max_points: float | None = None
+
+
+@dataclass
+class ScoreBreakdown:
+    """Result of recommend_job_score: the combined 0-1 total plus the
+    per-attribute contributions (in percentage points) that produced it."""
+
+    total: float
+    components: list[ScoreComponent]
+
+
+def recommend_job_score(profile: Profile, job_posting: JobPosting) -> ScoreBreakdown:
     """
     Calculate a recommendation score for a job posting based on the user's profile.
 
@@ -25,7 +55,9 @@ def recommend_job_score(profile: Profile, job_posting: JobPosting) -> float:
     - Job Type Preference: A score based on whether the user's preferred job type matches the job's type.
 
     Returns:
-        float: A recommendation score between 0 and 1, where 1 indicates a perfect match.
+        ScoreBreakdown: the combined score (0-1, where 1 is a perfect match)
+        alongside a ScoreComponent per attribute showing how many of the
+        final 0-100 points it contributed.
     """
     # Skill Match
     user_skills = set(profile.skills.all())
@@ -47,16 +79,27 @@ def recommend_job_score(profile: Profile, job_posting: JobPosting) -> float:
     # Job Type Preference
     job_type_score = 1.0 if profile.preferred_job_type == job_posting.job_type else 0.0
 
-    # Weighted average of all scores
-    total_score = (
-        skill_match_score * 0.4 +
-        experience_level_score * 0.2 +
-        location_score * 0.2 +
-        salary_score * 0.1 +
-        job_type_score * 0.1
-    )
+    raw_matches = {
+        "Skills match": skill_match_score,
+        "Experience level": experience_level_score,
+        "Location": location_score,
+        "Salary": salary_score,
+        "Job type": job_type_score,
+    }
 
-    return total_score
+    components = [
+        ScoreComponent(
+            label=label,
+            points=raw_matches[label] * weight * 100,
+            max_points=weight * 100,
+        )
+        for label, weight in SCORE_WEIGHTS.items()
+    ]
+
+    # Weighted average of all scores
+    total_score = sum(raw_matches[label] * weight for label, weight in SCORE_WEIGHTS.items())
+
+    return ScoreBreakdown(total=total_score, components=components)
 
 
 def _category_interaction_points(user):
@@ -98,9 +141,22 @@ def get_recommendations_for_user(user, limit=20):
 
     scored = []
     for job in jobs:
+        breakdown = recommend_job_score(profile, job)
         bonus = max(-0.3, min(0.3, category_points.get(job.category_id, 0) / 50))
-        total = max(0.0, min(1.0, recommend_job_score(profile, job) + bonus))
-        scored.append({"job": job, "score": round(total * 100)})
+        uncapped_total = breakdown.total + bonus
+        total = max(0.0, min(1.0, uncapped_total))
+
+        components = list(breakdown.components)
+        if bonus:
+            components.append(ScoreComponent(label="Your activity in this category", points=bonus * 100))
+
+        # Surface how much the 0-100% clamp took off (or added back), so the
+        # displayed line items always sum to the displayed score.
+        clamp_adjustment = (total - uncapped_total) * 100
+        if round(clamp_adjustment):
+            components.append(ScoreComponent(label="Adjustment (capped at 0-100%)", points=clamp_adjustment))
+
+        scored.append({"job": job, "score": round(total * 100), "breakdown": components})
 
     scored.sort(key=lambda item: item["score"], reverse=True)
     return scored[:limit]
