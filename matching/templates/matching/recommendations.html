@@ -60,12 +60,39 @@
           <span class="badge bg-light text-dark border">{{ rec.job.job_type }}</span>
         </div>
 
-        {% url 'jobs:job_detail' rec.job.id as job_url %}
-        {% if job_url %}
-        <a href="{{ job_url }}" class="btn btn-primary btn-sm px-3">View Details</a>
-        {% else %}
-        <a href="#" class="btn btn-outline-secondary btn-sm px-3 disabled">View Details</a>
-        {% endif %}
+        <div class="collapse mb-3" id="breakdown-{{ rec.job.id }}">
+          <div class="recs-breakdown p-3">
+            {% for item in rec.breakdown %}
+            <div class="d-flex justify-content-between small mb-1">
+              <span>{{ item.label }}</span>
+              <span class="fw-semibold {% if item.points < 0 %}text-danger{% endif %}">
+                {% if item.points > 0 %}+{% endif %}{{ item.points|floatformat:0 }} pts
+              </span>
+            </div>
+            {% if item.max_points %}
+            <div class="progress mb-2" style="height: 6px;">
+              <div class="progress-bar" role="progressbar"
+                   style="width: {% widthratio item.points item.max_points 100 %}%;"></div>
+            </div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+          {% url 'jobs:job_detail' rec.job.id as job_url %}
+          {% if job_url %}
+          <a href="{{ job_url }}" class="btn btn-primary btn-sm px-3">View Details</a>
+          {% else %}
+          <a href="#" class="btn btn-outline-secondary btn-sm px-3 disabled">View Details</a>
+          {% endif %}
+
+          <button type="button" class="btn btn-link btn-sm px-0" data-bs-toggle="collapse"
+                  data-bs-target="#breakdown-{{ rec.job.id }}" aria-expanded="false"
+                  aria-controls="breakdown-{{ rec.job.id }}">
+            Why this match? <i class="bi bi-chevron-down"></i>
+          </button>
+        </div>
       </div>
     </div>
     {% empty %}
